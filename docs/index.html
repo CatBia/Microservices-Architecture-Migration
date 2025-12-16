@@ -15,11 +15,12 @@
             --primary-color: #2563eb;
             --secondary-color: #1e40af;
             --accent-color: #3b82f6;
-            --text-color: #1f2937;
+            --text-color: #c4c8cf;
             --text-light: #6b7280;
-            --bg-color: #ffffff;
-            --bg-light: #f9fafb;
-            --bg-dark: #111827;
+            --bg-color: #0a131f;
+            --bg-light: #0a131f;
+            --bg-dark-light: #172638;
+            --bg-dark: #0a131f;
             --success-color: #10b981;
             --border-color: #e5e7eb;
         }
@@ -39,17 +40,48 @@
 
         /* Header */
         header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            position: relative;
             color: white;
             padding: 80px 0;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            object-fit: cover;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(50deg, rgba(37, 99, 235, 0.85) 0%, rgba(30, 64, 175, 0.85) 100%);
+            z-index: 1;
+        }
+
+        header .container {
+            position: relative;
+            z-index: 2;
         }
 
         header h1 {
             font-size: 3rem;
             margin-bottom: 1rem;
             font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         header p {
@@ -57,6 +89,7 @@
             opacity: 0.95;
             max-width: 800px;
             margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         /* Navigation */
@@ -155,16 +188,15 @@
         }
 
         .tech-category {
-            background: white;
+            background: var(--bg-dark-light);
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .tech-category h3 {
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border-color);
         }
 
         .tech-list {
@@ -191,7 +223,7 @@
 
         /* Architecture Diagram Placeholder */
         .architecture-diagram {
-            background: white;
+            background: var(--bg-light);
             padding: 3rem;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -201,10 +233,12 @@
 
         .diagram-placeholder {
             background: var(--bg-light);
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
             padding: 4rem 2rem;
             color: var(--text-light);
+        }
+        .diagram-placeholder img {
+            max-width: 100%;
+            height: auto;
         }
 
         /* Services */
@@ -216,7 +250,7 @@
         }
 
         .service-card {
-            background: white;
+            background: var(--bg-dark-light);
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -303,6 +337,10 @@
 </head>
 <body>
     <header>
+        <video autoplay muted loop playsinline preload="auto">
+            <source src="https://www.pexels.com/download/video/3129595/" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
         <div class="container">
             <h1>🚀 Microservices Architecture Migration</h1>
             <p>Strategic migration from monolithic to microservices architecture for a high-traffic e-commerce platform</p>
@@ -326,7 +364,7 @@
         <div class="container">
             <h2>Project Overview</h2>
             <p style="text-align: center; font-size: 1.125rem; color: var(--text-light); max-width: 900px; margin: 0 auto;">
-                Led the strategic migration from a monolithic application to a microservices architecture for a high-traffic e-commerce platform. The migration improved system scalability, deployment velocity, and team autonomy while maintaining <span class="highlight">zero downtime</span>.
+                the strategic migration from a monolithic application to a microservices architecture for a high-traffic e-commerce platform. The migration improved system scalability, deployment velocity, and team autonomy while maintaining <span class="highlight">zero downtime</span>.
             </p>
         </div>
     </section>
@@ -351,7 +389,7 @@
                     <div class="achievement-icon">👥</div>
                     <h3>Team Autonomy</h3>
                     <p><strong>Zero Coordination</strong></p>
-                    <p>Enabled independent team deployments</p>
+                    <p>Enabindependent team deployments</p>
                 </div>
                 <div class="achievement-card">
                     <div class="achievement-icon">💰</div>
@@ -369,9 +407,7 @@
             <div class="architecture-diagram">
                 <h3>Microservices Architecture</h3>
                 <div class="diagram-placeholder">
-                    <p style="font-size: 1.5rem; margin-bottom: 1rem;">🏗️</p>
-                    <p><strong>Service Communication Patterns</strong></p>
-                    <p style="margin-top: 1rem;">gRPC • REST • GraphQL • Kafka Events</p>
+                    <img src="assets/img/arch_overview.png" alt="Microservices Architecture">
                 </div>
             </div>
         </div>
@@ -565,10 +601,9 @@
     <footer>
         <div class="container">
             <p><strong>Microservices Architecture Migration</strong></p>
-            <p>E-commerce Platform</p>
+            <p>MovisterParallel Porter</p>
             <p style="margin-top: 1rem;">
-                <a href="https://github.com/yourusername/Microservices-Architecture-Migration">View on GitHub</a> | 
-                <a href="README.md">Documentation</a>
+                <a href="https://github.com/CatBia/Microservices-Architecture-Migration">View on GitHub</a>
             </p>
         </div>
     </footer>
