@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microservices Architecture Migration - E-commerce Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --bg-color: #ffffff;
+            --bg-light: #f9fafb;
+            --bg-dark: #111827;
+            --success-color: #10b981;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: var(--bg-dark);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Sections */
+        section {
+            padding: 60px 0;
+        }
+
+        section:nth-child(even) {
+            background-color: var(--bg-light);
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        /* Achievements */
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .achievement-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .achievement-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-card p {
+            color: var(--text-light);
+        }
+
+        /* Tech Stack */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .tech-category {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-category h3 {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .tech-list {
+            list-style: none;
+        }
+
+        .tech-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .tech-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tech-list li::before {
+            content: "▹";
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-right: 0.75rem;
+        }
+
+        /* Architecture Diagram Placeholder */
+        .architecture-diagram {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .diagram-placeholder {
+            background: var(--bg-light);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+
+        /* Services */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .service-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .service-card .tech-badge {
+            display: inline-block;
+            background: var(--bg-light);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            margin: 0.25rem 0.25rem 0.25rem 0;
+            color: var(--text-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--bg-dark);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        footer p {
+            margin-bottom: 1rem;
+        }
+
+        footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .achievements,
+            .tech-grid,
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: var(--bg-dark);
+            color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🚀 Microservices Architecture Migration</h1>
+            <p>Strategic migration from monolithic to microservices architecture for a high-traffic e-commerce platform</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#achievements">Achievements</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#tech-stack">Tech Stack</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#infrastructure">Infrastructure</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="overview">
+        <div class="container">
+            <h2>Project Overview</h2>
+            <p style="text-align: center; font-size: 1.125rem; color: var(--text-light); max-width: 900px; margin: 0 auto;">
+                Led the strategic migration from a monolithic application to a microservices architecture for a high-traffic e-commerce platform. The migration improved system scalability, deployment velocity, and team autonomy while maintaining <span class="highlight">zero downtime</span>.
+            </p>
+        </div>
+    </section>
+
+    <section id="achievements">
+        <div class="container">
+            <h2>Key Achievements</h2>
+            <div class="achievements">
+                <div class="achievement-card">
+                    <div class="achievement-icon">⚡</div>
+                    <h3>Deployment Time</h3>
+                    <p><strong>Weeks → Hours</strong></p>
+                    <p>Reduced deployment time from weeks to hours</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">📈</div>
+                    <h3>System Availability</h3>
+                    <p><strong>99.5% → 99.95%</strong></p>
+                    <p>Improved system availability significantly</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">👥</div>
+                    <h3>Team Autonomy</h3>
+                    <p><strong>Zero Coordination</strong></p>
+                    <p>Enabled independent team deployments</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">💰</div>
+                    <h3>Cost Reduction</h3>
+                    <p><strong>30% Savings</strong></p>
+                    <p>Reduced infrastructure costs through efficient resource utilization</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture">
+        <div class="container">
+            <h2>Architecture Overview</h2>
+            <div class="architecture-diagram">
+                <h3>Microservices Architecture</h3>
+                <div class="diagram-placeholder">
+                    <p style="font-size: 1.5rem; margin-bottom: 1rem;">🏗️</p>
+                    <p><strong>Service Communication Patterns</strong></p>
+                    <p style="margin-top: 1rem;">gRPC • REST • GraphQL • Kafka Events</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tech-stack">
+        <div class="container">
+            <h2>Technologies & Implementation</h2>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>Containerization & Orchestration</h3>
+                    <ul class="tech-list">
+                        <li>Kubernetes (EKS)</li>
+                        <li>Helm Charts</li>
+                        <li>Docker Containers</li>
+                        <li>Auto-scaling</li>
+                        <li>Service Discovery</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Cloud Infrastructure</h3>
+                    <ul class="tech-list">
+                        <li>AWS EKS Clusters</li>
+                        <li>Multi-AZ Deployment</li>
+                        <li>Terraform (IaC)</li>
+                        <li>VPC Networking</li>
+                        <li>Service Mesh</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Service Communication</h3>
+                    <ul class="tech-list">
+                        <li>gRPC (Inter-service)</li>
+                        <li>RESTful APIs</li>
+                        <li>GraphQL (Apollo Server)</li>
+                        <li>Kafka (Event-driven)</li>
+                        <li>Asynchronous Communication</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Data Layer</h3>
+                    <ul class="tech-list">
+                        <li>PostgreSQL (RDS Multi-AZ)</li>
+                        <li>MongoDB (Document Storage)</li>
+                        <li>Redis (Caching & Sessions)</li>
+                        <li>DynamoDB (High-throughput)</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>CI/CD Pipeline</h3>
+                    <ul class="tech-list">
+                        <li>GitLab CI</li>
+                        <li>GitHub Actions</li>
+                        <li>Spinnaker</li>
+                        <li>Jenkins</li>
+                        <li>Blue-Green & Canary Deployments</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Observability</h3>
+                    <ul class="tech-list">
+                        <li>DataDog (Tracing & APM)</li>
+                        <li>Grafana Dashboards</li>
+                        <li>CloudWatch</li>
+                        <li>New Relic</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Security</h3>
+                    <ul class="tech-list">
+                        <li>AWS Cognito</li>
+                        <li>Azure AD (SAML/OAuth)</li>
+                        <li>Security Groups</li>
+                        <li>VPN Gateway</li>
+                        <li>Network ACLs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2>Microservices</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <h4>API Gateway</h4>
+                    <div>
+                        <span class="tech-badge">GraphQL</span>
+                        <span class="tech-badge">REST</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Request routing, authentication, rate limiting</p>
+                </div>
+                <div class="service-card">
+                    <h4>User Service</h4>
+                    <div>
+                        <span class="tech-badge">gRPC</span>
+                        <span class="tech-badge">PostgreSQL</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">User management, authentication, profiles</p>
+                </div>
+                <div class="service-card">
+                    <h4>Product Service</h4>
+                    <div>
+                        <span class="tech-badge">gRPC</span>
+                        <span class="tech-badge">MongoDB</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Product catalog, search, recommendations</p>
+                </div>
+                <div class="service-card">
+                    <h4>Order Service</h4>
+                    <div>
+                        <span class="tech-badge">gRPC</span>
+                        <span class="tech-badge">Kafka</span>
+                        <span class="tech-badge">PostgreSQL</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Order processing, order history</p>
+                </div>
+                <div class="service-card">
+                    <h4>Payment Service</h4>
+                    <div>
+                        <span class="tech-badge">gRPC</span>
+                        <span class="tech-badge">PostgreSQL</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Payment processing, transaction management</p>
+                </div>
+                <div class="service-card">
+                    <h4>Inventory Service</h4>
+                    <div>
+                        <span class="tech-badge">gRPC</span>
+                        <span class="tech-badge">Kafka</span>
+                        <span class="tech-badge">DynamoDB</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Stock management, inventory updates</p>
+                </div>
+                <div class="service-card">
+                    <h4>Notification Service</h4>
+                    <div>
+                        <span class="tech-badge">Kafka</span>
+                        <span class="tech-badge">MongoDB</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Email, SMS, push notifications</p>
+                </div>
+                <div class="service-card">
+                    <h4>Search Service</h4>
+                    <div>
+                        <span class="tech-badge">REST</span>
+                        <span class="tech-badge">Elasticsearch</span>
+                    </div>
+                    <p style="margin-top: 0.5rem; color: var(--text-light);">Product search, filtering</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="infrastructure">
+        <div class="container">
+            <h2>Infrastructure Highlights</h2>
+            <div class="tech-grid" style="margin-top: 2rem;">
+                <div class="tech-category">
+                    <h3>High Availability</h3>
+                    <ul class="tech-list">
+                        <li>Multi-AZ deployment</li>
+                        <li>Auto-scaling policies</li>
+                        <li>Health checks & monitoring</li>
+                        <li>Zero-downtime deployments</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Scalability</h3>
+                    <ul class="tech-list">
+                        <li>Horizontal scaling</li>
+                        <li>Load balancing</li>
+                        <li>Database read replicas</li>
+                        <li>Caching strategies</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <h3>Security</h3>
+                    <ul class="tech-list">
+                        <li>Service-to-service auth</li>
+                        <li>Enterprise SSO</li>
+                        <li>Network isolation</li>
+                        <li>Encryption in transit</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p><strong>Microservices Architecture Migration</strong></p>
+            <p>E-commerce Platform</p>
+            <p style="margin-top: 1rem;">
+                <a href="https://github.com/yourusername/Microservices-Architecture-Migration">View on GitHub</a> | 
+                <a href="README.md">Documentation</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.opacity = '0.95';
+            } else {
+                header.style.opacity = '1';
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,14 @@
+# GitHub Pages Jekyll configuration
+# If using Jekyll, uncomment and configure below
+# Otherwise, GitHub Pages will serve static HTML files
+
+# theme: minima
+# plugins:
+#   - jekyll-feed
+
+# For static HTML sites, minimal config is needed
+title: Microservices Architecture Migration
+description: Strategic migration from monolithic to microservices architecture
+baseurl: ""
+url: ""
+
