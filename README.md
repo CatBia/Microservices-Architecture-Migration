@@ -106,6 +106,8 @@ This project documents an strategic migration from a monolithic application to a
 
 ## Getting Started
 
+> 📖 **New to this project?** Check out the comprehensive [Step-by-Step Build Guide](docs/BUILD_GUIDE.md) to build Movister Parallel Porter from scratch.
+
 ### Prerequisites
 
 - Docker and Docker Compose
