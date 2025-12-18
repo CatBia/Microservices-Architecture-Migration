@@ -98,7 +98,14 @@ This project documents an strategic migration from a monolithic application to a
 ├── .github/                   # GitHub Actions workflows
 │   └── workflows/
 │       ├── ci.yml
-│       └── cd.yml
+│       ├── cd.yml
+│       └── reusable/          # Reusable workflows
+│           ├── test-nodejs.yml
+│           ├── test-go.yml
+│           ├── build-docker.yml
+│           ├── deploy-kubernetes.yml
+│           ├── security-scan.yml
+│           └── README.md
 ├── .gitlab-ci.yml            # GitLab CI configuration
 ├── docker-compose.yml        # Local development environment
 └── Makefile                  # Common commands
@@ -107,6 +114,8 @@ This project documents an strategic migration from a monolithic application to a
 ## Getting Started
 
 > 📖 **New to this project?** Check out the comprehensive [Step-by-Step Build Guide](docs/BUILD_GUIDE.md) to build Movister Parallel Porter from scratch.
+> 
+> 🗺️ **Visual Guide:** View the [Build Guide Flowchart](docs/build-flowchart.html) for an interactive mind map of all build steps.
 
 ### Prerequisites
 
@@ -231,15 +240,34 @@ kubectl apply -k .
 
 ## CI/CD Pipeline
 
+### Reusable Workflows
+
+This project uses **GitHub Actions Reusable Workflows** to promote DRY (Don't Repeat Yourself) principles and maintain consistency across all services.
+
+**Available Reusable Workflows:**
+- `test-nodejs.yml` - Test Node.js services with linting and coverage
+- `test-go.yml` - Test Go services with linting and coverage
+- `build-docker.yml` - Build and push Docker images
+- `deploy-kubernetes.yml` - Deploy services to Kubernetes (EKS)
+- `security-scan.yml` - Security scanning with Trivy and CodeQL
+
+**Benefits:**
+- ✅ Write once, use everywhere
+- ✅ Consistent testing and deployment across all services
+- ✅ Easy to maintain and update
+- ✅ Scalable - add new services without duplicating code
+
+See [`.github/workflows/reusable/README.md`](.github/workflows/reusable/README.md) for detailed documentation.
+
 ### GitLab CI
 - Automated testing on merge requests
 - Container image builds
 - Deployment to staging environment
 
 ### GitHub Actions
-- Automated testing
+- Automated testing using reusable workflows
 - Security scanning
-- Deployment workflows
+- Deployment workflows with reusable patterns
 
 ### Spinnaker
 - Blue-green deployments

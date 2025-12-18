@@ -1,0 +1,80 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # Test API Gateway (Node.js)
+  test-api-gateway:
+    uses: ./.github/workflows/reusable/test-nodejs.yml
+    with:
+      service_path: 'services/api-gateway'
+      service_name: 'api-gateway'
+      node_version: '18'
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Test User Service (Go)
+  test-user-service:
+    uses: ./.github/workflows/reusable/test-go.yml
+    with:
+      service_path: 'services/user-service'
+      service_name: 'user-service'
+      go_version: '1.21'
+
+  # Test Product Service (Go)
+  test-product-service:
+    uses: ./.github/workflows/reusable/test-go.yml
+    with:
+      service_path: 'services/product-service'
+      service_name: 'product-service'
+      go_version: '1.21'
+
+  # Security Scan
+  security-scan:
+    uses: ./.github/workflows/reusable/security-scan.yml
+    with:
+      service_path: '.'
+      service_name: 'movister-parallel-porter'
+      scan_type: 'all'
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build Docker Images
+  build-api-gateway:
+    needs: [test-api-gateway]
+    uses: ./.github/workflows/reusable/build-docker.yml
+    with:
+      service_path: services/api-gateway
+      service_name: api-gateway
+      push_image: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  build-user-service:
+    needs: [test-user-service]
+    uses: ./.github/workflows/reusable/build-docker.yml
+    with:
+      service_path: services/user-service
+      service_name: user-service
+      push_image: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+  build-product-service:
+    needs: [test-product-service]
+    uses: ./.github/workflows/reusable/build-docker.yml
+    with:
+      service_path: services/product-service
+      service_name: product-service
+      push_image: ${{ github.event_name != 'pull_request' }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+

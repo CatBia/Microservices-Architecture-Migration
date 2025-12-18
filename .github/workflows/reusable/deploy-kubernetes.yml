@@ -1,0 +1,97 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+        description: 'Deployment environment (dev, staging, production)'
+      service_name:
+        required: true
+        type: string
+        description: 'Name of the service to deploy'
+      namespace:
+        required: false
+        type: string
+        default: 'movister'
+        description: 'Kubernetes namespace'
+      image_tag:
+        required: false
+        type: string
+        default: 'latest'
+        description: 'Docker image tag to deploy'
+      k8s_manifest_path:
+        required: false
+        type: string
+        default: 'kubernetes/overlays'
+        description: 'Path to Kubernetes manifests'
+      aws_region:
+        required: false
+        type: string
+        default: 'us-east-1'
+        description: 'AWS region'
+      eks_cluster_name:
+        required: false
+        type: string
+        default: 'movister-dev'
+        description: 'EKS cluster name'
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+        description: 'AWS access key ID'
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        description: 'AWS secret access key'
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.service_name }} to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ inputs.eks_cluster_name }} \
+            --region ${{ inputs.aws_region }}
+
+      - name: Verify cluster connection
+        run: kubectl cluster-info
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f ${{ inputs.k8s_manifest_path }}/${{ inputs.environment }}/${{ inputs.service_name }}.yaml
+          kubectl set image deployment/${{ inputs.service_name }} \
+            ${{ inputs.service_name }}=${{ inputs.service_name }}:${{ inputs.image_tag }} \
+            -n ${{ inputs.namespace }} || true
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/${{ inputs.service_name }} -n ${{ inputs.namespace }} --timeout=5m
+
+      - name: Verify deployment
+        run: |
+          kubectl get pods -n ${{ inputs.namespace }} -l app=${{ inputs.service_name }}
+          kubectl get svc -n ${{ inputs.namespace }} -l app=${{ inputs.service_name }}
+

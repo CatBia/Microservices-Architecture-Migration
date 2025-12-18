@@ -1,0 +1,81 @@
+name: Build and Push Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      service_path:
+        required: true
+        type: string
+        description: 'Path to the service directory'
+      service_name:
+        required: true
+        type: string
+        description: 'Name of the service'
+      dockerfile_path:
+        required: false
+        type: string
+        default: 'Dockerfile'
+        description: 'Path to Dockerfile relative to service_path'
+      image_registry:
+        required: false
+        type: string
+        default: 'docker.io'
+        description: 'Docker registry URL'
+      push_image:
+        required: false
+        type: boolean
+        default: true
+        description: 'Whether to push the image'
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+        description: 'Docker registry username'
+      DOCKER_PASSWORD:
+        required: true
+        description: 'Docker registry password'
+
+jobs:
+  build:
+    name: Build ${{ inputs.service_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ inputs.image_registry }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ inputs.image_registry }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ inputs.service_path }}
+          file: ${{ inputs.service_path }}/${{ inputs.dockerfile_path }}
+          push: ${{ inputs.push_image }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=${{ inputs.image_registry }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:buildcache
+          cache-to: type=registry,ref=${{ inputs.image_registry }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.service_name }}:buildcache,mode=max
+
+      - name: Image digest
+        run: echo "Image pushed with digest ${{ steps.build.outputs.digest }}"
+

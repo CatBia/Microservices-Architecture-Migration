@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movister Parallel Porter - Build Guide Flowchart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a131f 0%, #172638 100%);
+            color: #c4c8cf;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #3b82f6;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .flowchart-container {
+            background: #172638;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .flowchart-container .img {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 8px;
+            background: white;
+            padding: 20px;
+        }
+
+        .flowchart-container .img img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .phase-section {
+            background: #172638;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .phase-title {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .step-card {
+            background: #0a131f;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #1e40af;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .step-title {
+            color: #c4c8cf;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step-details {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .step-details ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .step-details li {
+            margin: 3px 0;
+        }
+
+        .quick-ref {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .quick-ref h2 {
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .quick-ref-path {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.8;
+            border-left: 4px solid white;
+        }
+
+        .time-estimate {
+            background: #172638;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .time-estimate h2 {
+            color: #3b82f6;
+            margin-bottom: 20px;
+        }
+
+        .time-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .time-item {
+            background: #0a131f;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #10b981;
+        }
+
+        .time-item strong {
+            color: #10b981;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .time-item span {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .total-time {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .mermaid {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .phase-steps {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-ref-path {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Movister Parallel Porter</h1>
+        <p class="subtitle">Build Guide Flowchart & Mind Map</p>
+
+        <div class="flowchart-container">
+            <h2 style="color: #3b82f6; margin-bottom: 20px; text-align: center;">Interactive Flowchart</h2>
+            <div class="img">
+                <img src="assets/img/step_by_step_img.png" alt="Build Flowchart">
+            </div>
+        </div>
+
+        <div class="quick-ref">
+            <h2>⚡ Quick Reference: Critical Path</h2>
+            <div class="quick-ref-path">
+                Install Tools → Configure AWS → Create Infrastructure → 
+                Set Up Databases → Build Services → Containerize → 
+                Deploy to K8s → Set Up CI/CD → Configure Monitoring → 
+                Secure → Test → Deploy to Production
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>📋 Phase 1: Prerequisites</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">1</span>
+                        Install Required Tools
+                    </div>
+                    <div class="step-details">
+                        <ul>
+                            <li>Docker & Docker Compose</li>
+                            <li>kubectl</li>
+                            <li>Helm</li>
+                            <li>Terraform</li>
+                            <li>AWS CLI</li>
+                            <li>Node.js</li>
+                            <li>Go</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">2</span>
+                        Configure AWS Credentials
+                    </div>
+                    <div class="step-details">
+                        AWS Access Key ID, Secret Access Key, and default region configuration
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">3</span>
+                        Verify Installations
+                    </div>
+                    <div class="step-details">
+                        Confirm all tools are properly installed and accessible
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>🏗️ Phase 2: Project Setup</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">4</span>
+                        Clone and Initialize Repository
+                    </div>
+                    <div class="step-details">
+                        Clone repository and create complete directory structure for all services and infrastructure
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">5</span>
+                        Create Base Configuration Files
+                    </div>
+                    <div class="step-details">
+                        Makefile for common commands and .gitignore for version control
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>☁️ Phase 3: Infrastructure Setup</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">6</span>
+                        Create Terraform VPC Module
+                    </div>
+                    <div class="step-details">
+                        VPC, subnets (public/private), internet gateway, and route tables
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">7</span>
+                        Create EKS Module
+                    </div>
+                    <div class="step-details">
+                        EKS cluster, node groups, and IAM roles for Kubernetes
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">8</span>
+                        Create Dev Environment Config
+                    </div>
+                    <div class="step-details">
+                        Terraform backend configuration and provider setup
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">9</span>
+                        Apply Terraform & Configure kubectl
+                    </div>
+                    <div class="step-details">
+                        Initialize, plan, and apply infrastructure. Configure kubectl for EKS access
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>💾 Phase 4: Database Setup</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">10</span>
+                        Create RDS PostgreSQL Module
+                    </div>
+                    <div class="step-details">
+                        DB subnet group, security groups, and RDS instance configuration
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">11</span>
+                        Set Up All Databases
+                    </div>
+                    <div class="step-details">
+                        PostgreSQL (RDS), MongoDB, Redis, DynamoDB, and Elasticsearch
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>🔧 Phase 5: Service Development</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">12</span>
+                        Create API Gateway Service
+                    </div>
+                    <div class="step-details">
+                        GraphQL (Apollo Server) + REST endpoints using TypeScript/Node.js
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">13</span>
+                        Create User Service
+                    </div>
+                    <div class="step-details">
+                        gRPC + REST service in Go with PostgreSQL integration
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">14</span>
+                        Create Remaining Services
+                    </div>
+                    <div class="step-details">
+                        Product, Order, Payment, Inventory, Notification, and Search services
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>🐳 Phase 6: Containerization</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">15</span>
+                        Create Docker Compose
+                    </div>
+                    <div class="step-details">
+                        Local development environment with all services, databases, and message brokers
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>⚙️ Phase 7: Kubernetes Deployment</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">16</span>
+                        Create K8s Base Manifests
+                    </div>
+                    <div class="step-details">
+                        Deployments, services, and namespaces for all microservices
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">17</span>
+                        Create Helm Chart Templates
+                    </div>
+                    <div class="step-details">
+                        Reusable Helm charts for services and infrastructure components
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">18</span>
+                        Deploy to Kubernetes
+                    </div>
+                    <div class="step-details">
+                        Apply manifests and verify all services are running correctly
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>🔄 Phase 8: CI/CD Pipeline</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">19</span>
+                        Create GitHub Actions Workflows
+                    </div>
+                    <div class="step-details">
+                        CI pipeline for testing and building, CD pipeline for automated deployment
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>📊 Phase 9: Monitoring & Observability</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">20</span>
+                        Set Up Prometheus & Grafana
+                    </div>
+                    <div class="step-details">
+                        Install via Helm and configure monitoring dashboards
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">21</span>
+                        Configure DataDog (Optional)
+                    </div>
+                    <div class="step-details">
+                        Install DataDog agent and configure API keys for APM
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>🔒 Phase 10: Security Configuration</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">22</span>
+                        Set Up AWS Cognito
+                    </div>
+                    <div class="step-details">
+                        Create user pool and user pool client for authentication
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">23</span>
+                        Create Kubernetes Secrets
+                    </div>
+                    <div class="step-details">
+                        Database credentials and API keys stored securely in K8s
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>✅ Phase 11: Testing & Validation</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">24</span>
+                        Create Health Check Scripts
+                    </div>
+                    <div class="step-details">
+                        Automated health checks for all services
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">25</span>
+                        Run End-to-End Tests
+                    </div>
+                    <div class="step-details">
+                        API tests, gRPC tests, and database connectivity verification
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="phase-section">
+            <div class="phase-title">
+                <span>🚀 Phase 12: Production Deployment</span>
+            </div>
+            <div class="phase-steps">
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">26</span>
+                        Production Deployment Checklist
+                    </div>
+                    <div class="step-details">
+                        Verify all tests passing, infrastructure ready, monitoring configured, security hardened
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-title">
+                        <span class="step-number">27</span>
+                        Go Live
+                    </div>
+                    <div class="step-details">
+                        Deploy to production, monitor deployment, and verify all services
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="time-estimate">
+            <h2>⏱️ Time Estimates</h2>
+            <div class="time-grid">
+                <div class="time-item">
+                    <strong>Prerequisites</strong>
+                    <span>30-60 minutes</span>
+                </div>
+                <div class="time-item">
+                    <strong>Project Setup</strong>
+                    <span>15-30 minutes</span>
+                </div>
+                <div class="time-item">
+                    <strong>Infrastructure</strong>
+                    <span>2-4 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Database Setup</strong>
+                    <span>1-2 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Service Development</strong>
+                    <span>8-16 hours/service</span>
+                </div>
+                <div class="time-item">
+                    <strong>Containerization</strong>
+                    <span>1-2 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Kubernetes</strong>
+                    <span>2-4 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>CI/CD Setup</strong>
+                    <span>2-3 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Monitoring</strong>
+                    <span>1-2 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Security</strong>
+                    <span>2-3 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Testing</strong>
+                    <span>2-4 hours</span>
+                </div>
+                <div class="time-item">
+                    <strong>Production</strong>
+                    <span>1-2 hours</span>
+                </div>
+            </div>
+            <div class="total-time">
+                Total Estimated Time: 30-50 hours (depending on experience level)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#2563eb',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#1e40af',
+                lineColor: '#3b82f6',
+                secondaryColor: '#172638',
+                tertiaryColor: '#0a131f'
+            }
+        });
+    </script>
+</body>
+</html>
+
