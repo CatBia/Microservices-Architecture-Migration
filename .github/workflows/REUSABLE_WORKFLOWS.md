@@ -133,6 +133,24 @@ deploy-new-service:
 
 That's it! No need to duplicate workflow code.
 
+## Artifacts in Workflows
+
+**Artifacts** are files produced during workflow runs that are preserved for later use. They are essential for:
+
+- 🔍 **Debugging**: Download test results, logs, and error outputs to investigate failures
+- 📊 **Test Results & Coverage**: Store test outputs and coverage reports for analysis
+- 📦 **Build Outputs**: Preserve compiled binaries, Docker image metadata, and build logs
+- 🔄 **Cross-Job Communication**: Share files between jobs in the same workflow
+- 📋 **Compliance & Auditing**: Maintain records of builds and deployments
+
+**Best Practices for Artifacts:**
+- Use `if: always()` to upload artifacts even when jobs fail
+- Set appropriate `retention-days` based on artifact importance
+- Use descriptive artifact names with context (service name, SHA, etc.)
+- Handle missing files gracefully with `if-no-files-found: warn`
+
+📖 **See [`.github/workflows/ARTIFACTS.md`](ARTIFACTS.md) for comprehensive artifact documentation.**
+
 ## Best Practices
 
 1. **Keep workflows focused**: Each reusable workflow should have a single responsibility
@@ -141,6 +159,7 @@ That's it! No need to duplicate workflow code.
 4. **Document everything**: Update README.md when adding new workflows
 5. **Test locally**: Use `act` or GitHub Actions locally before committing
 6. **Version control**: All workflow changes go through PR review
+7. **Upload artifacts**: Preserve test results, build outputs, and deployment information for debugging and compliance
 
 ## Migration from Monolithic Workflows
 

@@ -1327,6 +1327,93 @@ EOF
 5. **Version Control**: All workflow changes tracked in git
 
 See `.github/workflows/reusable/README.md` for detailed documentation on all reusable workflows.
+
+### Step 18: Configure Artifacts in Workflows
+
+**Artifacts** are files produced during workflow runs that are preserved for later use. They are essential for debugging, compliance, and sharing data between jobs.
+
+**Why Use Artifacts:**
+- **Debugging**: Download test results and logs to investigate failures
+- **Test Results**: Store test outputs and coverage reports for analysis
+- **Build Outputs**: Preserve compiled binaries and build metadata
+- **Cross-Job Communication**: Share files between jobs in the same workflow
+- **Compliance**: Maintain audit trails of builds and deployments
+
+**Example: Adding Artifacts to Test Workflow**
+
+```yaml
+# In .github/workflows/reusable/test-nodejs.yml
+- name: Upload test results
+  uses: actions/upload-artifact@v3
+  if: always()  # Upload even if job fails
+  with:
+    name: ${{ inputs.service_name }}-test-results
+    path: |
+      ${{ inputs.service_path }}/test-results/
+      ${{ inputs.service_path }}/coverage/
+    retention-days: 30
+    if-no-files-found: warn
+
+- name: Upload coverage report
+  uses: actions/upload-artifact@v3
+  if: always()
+  with:
+    name: ${{ inputs.service_name }}-coverage
+    path: ${{ inputs.service_path }}/coverage/
+    retention-days: 30
+```
+
+**Example: Adding Artifacts to Build Workflow**
+
+```yaml
+# In .github/workflows/reusable/build-docker.yml
+- name: Save image metadata
+  if: always()
+  run: |
+    mkdir -p build-artifacts
+    echo "${{ steps.meta.outputs.tags }}" > build-artifacts/image-tags.txt
+    echo "${{ inputs.service_name }}" > build-artifacts/service-name.txt
+
+- name: Upload build artifacts
+  uses: actions/upload-artifact@v3
+  if: always()
+  with:
+    name: ${{ inputs.service_name }}-build-artifacts
+    path: build-artifacts/
+    retention-days: 90
+```
+
+**Example: Adding Artifacts to Deployment Workflow**
+
+```yaml
+# In .github/workflows/reusable/deploy-kubernetes.yml
+- name: Save deployment information
+  if: always()
+  run: |
+    mkdir -p deployment-artifacts
+    kubectl get deployment ${{ inputs.service_name }} -n ${{ inputs.namespace }} -o yaml > deployment-artifacts/deployment.yaml || true
+    echo "${{ inputs.environment }}" > deployment-artifacts/environment.txt
+    echo "${{ inputs.service_name }}" > deployment-artifacts/service-name.txt
+
+- name: Upload deployment artifacts
+  uses: actions/upload-artifact@v3
+  if: always()
+  with:
+    name: ${{ inputs.service_name }}-deployment-${{ inputs.environment }}
+    path: deployment-artifacts/
+    retention-days: 90
+```
+
+**Best Practices:**
+1. Always use `if: always()` to ensure artifacts are uploaded even if jobs fail
+2. Set appropriate `retention-days` based on artifact importance:
+   - Test results: 30 days
+   - Build artifacts: 7-30 days
+   - Deployment manifests: 90-365 days
+3. Use descriptive names: `${{ inputs.service_name }}-test-results-${{ github.sha }}`
+4. Handle missing files gracefully with `if-no-files-found: warn` or `ignore`
+
+📖 **See [`.github/workflows/ARTIFACTS.md`](.github/workflows/ARTIFACTS.md) for comprehensive documentation on artifacts.**
 ```
 
 ---

@@ -268,6 +268,33 @@ See [`.github/workflows/reusable/README.md`](.github/workflows/reusable/README.m
 - Automated testing using reusable workflows
 - Security scanning
 - Deployment workflows with reusable patterns
+- **Artifacts**: Test results, coverage reports, build outputs, and deployment manifests are stored as artifacts for debugging, compliance, and cross-job communication
+
+### GitHub Actions Artifacts
+
+**Artifacts** are files produced during workflow runs that are preserved for later use. They are essential for:
+
+- 🔍 **Debugging**: Download test results, logs, and error outputs to investigate failures
+- 📊 **Test Results & Coverage**: Store test outputs and coverage reports for analysis and trending
+- 📦 **Build Outputs**: Preserve compiled binaries, Docker image metadata, and build logs
+- 🔄 **Cross-Job Communication**: Share files between jobs in the same workflow
+- 📋 **Compliance & Auditing**: Maintain records of builds and deployments for audit trails
+
+**Common Artifact Types:**
+- Test results (JUnit XML, JSON)
+- Code coverage reports (HTML, LCOV)
+- Build artifacts (binaries, packages)
+- Deployment manifests (Kubernetes YAML)
+- Security scan results (vulnerability reports)
+- Build and deployment logs
+
+**Best Practices:**
+- Use `if: always()` to upload artifacts even when jobs fail
+- Set appropriate `retention-days` based on artifact importance
+- Use descriptive artifact names with context (service name, SHA, etc.)
+- Handle missing files gracefully with `if-no-files-found: warn`
+
+📖 **See [`.github/workflows/ARTIFACTS.md`](.github/workflows/ARTIFACTS.md) for a comprehensive guide on using artifacts in CI/CD workflows.**
 
 ### Spinnaker
 - Blue-green deployments

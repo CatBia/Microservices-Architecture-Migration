@@ -148,6 +148,30 @@ jobs:
 4. Document in this README
 5. Update main CI/CD workflows to use it
 
+## Artifacts
+
+All reusable workflows can be enhanced with artifact uploads to preserve test results, build outputs, and deployment information. This is essential for:
+
+- **Debugging**: Download artifacts to investigate failed builds
+- **Test Results**: Store test outputs and coverage reports
+- **Build Outputs**: Preserve build metadata and logs
+- **Cross-Job Communication**: Share files between jobs
+- **Compliance**: Maintain audit trails
+
+**Example: Adding artifacts to a workflow**
+
+```yaml
+- name: Upload test results
+  uses: actions/upload-artifact@v3
+  if: always()
+  with:
+    name: ${{ inputs.service_name }}-test-results
+    path: test-results/
+    retention-days: 30
+```
+
+📖 **See [`.github/workflows/ARTIFACTS.md`](../ARTIFACTS.md) for comprehensive artifact documentation.**
+
 ## Best Practices
 
 - Keep workflows focused on a single responsibility
@@ -156,6 +180,7 @@ jobs:
 - Document all inputs and secrets
 - Test workflows in development environment first
 - Use matrix strategies for multiple services
+- **Upload artifacts** for debugging and compliance
 
 ## Examples
 
